@@ -10,6 +10,17 @@ in
 
   home-manager.users.matt = import /home/matt/.config/nixpkgs/home.nix;
 
+  # https://unix.stackexchange.com/a/437249
+  nixpkgs.config.firefox.enableGnomeExtensions = true;
+  services.gnome.chrome-gnome-shell.enable = true;
+
+  environment.loginShellInit = ''
+    if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then
+      exec sway
+    fi
+  '';
+
+
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
