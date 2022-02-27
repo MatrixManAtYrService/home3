@@ -1,10 +1,5 @@
 { pkgs, ...}: {
 
-  wayland.windowManager.sway = {
-    enable = true;
-    wrapperFeatures.gtk = true ;
-  };
-
   home.packages = [ 
     pkgs.zsh 
     pkgs.alacritty 
