@@ -6,14 +6,31 @@ in
   imports = [
       ./hardware-configuration.nix
       ./modules/sway.nix
+#      ./modules/k8s.nix
       <home-manager/nixos>
     ];
 
+  location = {
+    latitude = "38.83";
+    longitude = "-104.82";
+  };
+
   home-manager.users.matt = import /home/matt/.config/nixpkgs/home.nix;
+
+  virtualisation.docker.enable = true;
+
 
   # https://unix.stackexchange.com/a/437249
   # nixpkgs.config.firefox.enableGnomeExtensions = true;
   # services.gnome.chrome-gnome-shell.enable = true;
+
+  services.printing.enable = true;
+  services.printing.drivers = [ pkgs.brlaser ];
+
+  sound.enable = true;
+  hardware.pulseaudio.enable = true;
+  hardware.pulseaudio.support32Bit = true;
+  users.extraUsers.matt.extraGroups = ["audio" "docker"];
 
 
   # Use the systemd-boot EFI boot loader.
@@ -46,6 +63,8 @@ in
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
+  services.xserver.libinput.enable = true;
+  services.xserver.displayManager.startx.enable = true;
 
   # Enable the GNOME Desktop Environment.
   # services.xserver.displayManager.gdm.enable = true;

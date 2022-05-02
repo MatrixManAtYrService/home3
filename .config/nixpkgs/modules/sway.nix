@@ -1,7 +1,13 @@
 { config, pkgs, lib, ... }:
-# https://gist.github.com/mschwaig/195fe93ed85dea7aaceaf8e1fc6c0e99
 
-{
+let 
+
+  start-waybar = pkgs.writeShellScriptBin "start-waybar" ''
+    export SWAYSOCK=/run/user/$(id -u)/sway-ipc.$(id -u).$(pgrep -f 'sway$').sock
+    ${pkgs.waybar}/bin/waybar
+  '';
+
+in {
 
   programs.sway = {
     enable = true;
@@ -10,9 +16,10 @@
       swayidle
       xwayland
       waybar
-      dmenu
+      wofi
       mako
       kanshi
+      gammastep
     ];
   };
 
