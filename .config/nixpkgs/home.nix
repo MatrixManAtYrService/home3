@@ -1,15 +1,22 @@
-{ pkgs, ...}: {
+{ pkgs, ...}: 
+{
+
 
   nixpkgs.config.allowUnfree = true;
+  home.stateVersion = "18.09";
+
 
   home.packages = with pkgs; [ 
     zsh 
+    exercism
+    silver-searcher
     alacritty 
+    asciinema
+    kitty
     firefox 
+    fortune
     google-chrome
     brave
-    swaylock
-    swayidle
     kanshi
     wl-clipboard
     mako
@@ -19,18 +26,123 @@
     swayidle
     wl-clipboard
     mako
+    gimp
+    gron
+    gcc
+    pre-commit
     python39Packages.ipython
     python39Packages.flake8
-    python310
+    python39Packages.pipx
+    python39Packages.pandas
+    python39
+    postgresql
     black
     slack
     vscode
     htop
+    nodejs
+    minikube
+    kubectl
+    kubernetes-helm
+    k9s
+    wl-clipboard
+    gnome.nautilus
+    vlc
+    graphviz
+    yarn
+    lsof
+    sqlite
+    grim
+    slurp
+    terraform
+    awscli
+    docker-compose
+    bat
+    tmux
   ] ;
 
-  home.shellAliases = {
-    vi = "nvim";
+  programs = {
+    fzf = {
+      enable = true;
+      enableZshIntegration = true;
+    };
+    jq.enable = true;
+    dircolors.enable = true;
+    htop.enable = true;
+    direnv = {
+      enable = true;
+      enableZshIntegration = true;
+    };
   };
+
+  programs.zsh = {
+    enable = true;
+    defaultKeymap = "viins";
+    plugins = [
+      {
+        name = "pure";
+        src = pkgs.fetchFromGitHub {
+          owner = "sindresorhus";
+  	repo = "pure";
+  	rev  = "v1.20.1";
+  	sha256 = "1bxg5i3a0dm5ifj67ari684p89bcr1kjjh6d5gm46yxyiz9f5qla";
+        };
+      }
+      {
+        name = "today";
+        src = ./zsh_functions;
+        file = "today.zsh";
+      }
+      {
+        name = "vi-zle-customizations";
+        src = ./zsh_functions;
+        file = "vi-zle.zsh";
+      }
+    ];
+  };
+
+  programs.neovim = {
+    enable = true;
+    viAlias = true;
+    vimAlias = true;
+    plugins = with pkgs.vimPlugins;
+      let
+        vim-nix = pkgs.vimUtils.buildVimPlugin {
+          name = "vim-nix";
+          src = pkgs.fetchgit {
+	    url = "https://github.com/LnL7/vim-nix";
+            rev = "7d23e97d13c40fcc6d603b291fe9b6e5f92516ee";
+	    sha256 = "1vaprm79j0nfl37r6lw0zwd048ajd5sc9cvny59qwdl3x0zk38av";
+          };
+        };
+      in [
+        vim-nix
+        pkgs.vimPlugins.coc-nvim
+        pkgs.vimPlugins.coc-json
+        pkgs.vimPlugins.coc-pyright
+        # todo: try coc-pylsp
+        pkgs.vimPlugins.fzf-vim
+        pkgs.vimPlugins.vim-isort
+      ];
+      extraConfig = ''
+        " fzf
+        """""
+
+        nnoremap <silent> <C-p> :GFiles<CR>
+
+        " black
+        """""""
+
+        "autocmd BufWritePost *.py execute '! black %'
+
+        " coc
+        """""
+
+        inoremap <silent><expr> <tab> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<TAB>"
+        inoremap <silent><expr> <cr> "\<c-g>u\<CR>"
+      '';
+  };
+
 
 
   # IPython vi-mode
@@ -83,3 +195,4 @@
   '';
 
 }
+

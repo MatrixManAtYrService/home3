@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, nix, ... }:
 
 let secrets = import ./secrets.nix;
 in
@@ -9,6 +9,11 @@ in
 #      ./modules/k8s.nix
       <home-manager/nixos>
     ];
+    
+  nix = {
+    package = pkgs.nixFlakes;
+    extraOptions = "experimental-features = nix-command flakes";
+  };
 
   location = {
     latitude = "38.83";
@@ -18,11 +23,20 @@ in
   home-manager.users.matt = import /home/matt/.config/nixpkgs/home.nix;
 
   virtualisation.docker.enable = true;
+  virtualisation.docker.daemon.settings.insecure-registries = [ "192.168.49.2:30500" ]; 
 
 
   # https://unix.stackexchange.com/a/437249
   # nixpkgs.config.firefox.enableGnomeExtensions = true;
   # services.gnome.chrome-gnome-shell.enable = true;
+
+  nixpkgs.config.allowUnfree = true;
+  services.plex = {
+    enable = true;
+    openFirewall = true;
+  };
+  
+  services.openssh.enable = true;
 
   services.printing.enable = true;
   services.printing.drivers = [ pkgs.brlaser ];
@@ -98,8 +112,10 @@ in
   users.users.matt = {
     hashedPassword = secrets.nixosUser.matt.hashedPassword;
     isNormalUser = true;
-    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "video" ]; # Enable ‘sudo’ for the user.
+    shell = pkgs.zsh;
   };
+
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -123,10 +139,10 @@ in
   # services.openssh.enable = true;
 
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedTCPPorts = [ 22 ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
+  networking.firewall.enable = false;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
