@@ -5,8 +5,18 @@
   nixpkgs.config.allowUnfree = true;
   home.stateVersion = "18.09";
 
+  nixpkgs.overlays = [
+    (self: super: {
+      fcitx-engines = pkgs.fcitx5;
+    })
+  ];
+
 
   home.packages = with pkgs; [ 
+    yamlfmt
+    yaml-language-server
+    cwltool
+    helix
     zsh 
     exercism
     silver-searcher
@@ -29,12 +39,11 @@
     gimp
     gron
     gcc
-    pre-commit
-    python39Packages.ipython
-    python39Packages.flake8
-    python39Packages.pipx
-    python39Packages.pandas
-    python39
+    python310Packages.ipython
+    python310Packages.python-lsp-server
+    python310Packages.black
+    python310Packages.flake8
+    python310
     postgresql
     black
     slack
@@ -59,6 +68,20 @@
     docker-compose
     bat
     tmux
+    nimlsp
+    microsoft-edge
+    icdiff
+    tree
+    ruff
+    tcpdump
+    mitmproxy
+    cachix
+    wget
+    boinc
+    wezterm
+    gparted
+    cmake
+    gnumake
   ] ;
 
   programs = {
@@ -115,32 +138,117 @@
 	    sha256 = "1vaprm79j0nfl37r6lw0zwd048ajd5sc9cvny59qwdl3x0zk38av";
           };
         };
+        copilot-vim = pkgs.vimUtils.buildVimPlugin {
+          name = "copilot-vim";
+          src = pkgs.fetchgit {
+	    url = "https://github.com/github/copilot.vim";
+            rev = "9e869d29e62e36b7eb6fb238a4ca6a6237e7d78b";
+	    sha256 = "B+2hHNTrabj6O9F6OoskNIUsjJXLrt+4XgjuiRoM80s=";
+          };
+        };
+        nim-vim = pkgs.vimUtils.buildVimPlugin {
+          name = "nim-vim";
+          src = pkgs.fetchgit {
+	    url = "https://github.com/zah/nim.vim";
+            rev = "a15714fea392b0f06ff2b282921a68c7033e39a2";
+	    sha256 = "B+2hHNTrabj6O9F6OoskNIUsjJXLrt+4XgjuiRoM80s=";
+          };
+        };
+        asyncomplete-vim = pkgs.vimUtils.buildVimPlugin {
+          name = "asyncomplete-vim";
+          src = pkgs.fetchgit {
+	    url = "https://github.com/prabirshrestha/asyncomplete.vim";
+            rev = "9c7651894c2c6d656c0dc71e87cfabbbb71b9c78";
+	    sha256 = "G9KLPyVatLC3eLeUMFpppFdD4SroUzbZ2sdam3aISu4=";
+          };
+        };
+        async-vim = pkgs.vimUtils.buildVimPlugin {
+          name = "async-vim";
+          src = pkgs.fetchgit {
+	    url = "https://github.com/prabirshrestha/async.vim";
+            rev = "2082d13bb195f3203d41a308b89417426a7deca1";
+	    sha256 = "YxZdOpV66YxNBACZRPugpk09+h42Sx/kjjDYPnOmqyI=";
+          };
+        };
+        asyncomplete-lsp-vim = pkgs.vimUtils.buildVimPlugin {
+          name = "asyncomplete-lsp-vim";
+          src = pkgs.fetchgit {
+	    url = "https://github.com/prabirshrestha/asyncomplete-lsp.vim";
+            rev = "cc5247bc268fb2c79d8b127bd772514554efb3ee";
+	    sha256 = "SeEAy/jtrdHerZPVjQZXANTcuvMndIIWgGh3B8Ik1NM=";
+          };
+        };
       in [
         vim-nix
-        pkgs.vimPlugins.coc-nvim
-        pkgs.vimPlugins.coc-json
-        pkgs.vimPlugins.coc-pyright
-        # todo: try coc-pylsp
-        pkgs.vimPlugins.fzf-vim
-        pkgs.vimPlugins.vim-isort
+        #copilot-vim
+
+        ## nim-lsp
+        #pkgs.vimPlugins.vim-lsp
+        #asyncomplete-vim
+        #async-vim
+        #asyncomplete-lsp-vim
+
+        ## pkgs.vimPlugins.nim-vim
+        #pkgs.vimPlugins.coc-nvim
+        #pkgs.vimPlugins.coc-json
+        #pkgs.vimPlugins.coc-pyright
+        ## todo: try coc-pylsp
+        #pkgs.vimPlugins.fzf-vim
+        #pkgs.vimPlugins.vim-isort
       ];
-      extraConfig = ''
-        " fzf
-        """""
+      #extraConfig = ''
+      #  " fzf
+      #  """""
 
-        nnoremap <silent> <C-p> :GFiles<CR>
+      #  nnoremap <silent> <C-p> :GFiles<CR>
 
-        " black
-        """""""
+      #  " black
+      #  """""""
 
-        "autocmd BufWritePost *.py execute '! black %'
+      #  "autocmd BufWritePost *.py execute '! black %'
 
-        " coc
-        """""
+      #  " coc
+      #  """""
 
-        inoremap <silent><expr> <tab> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<TAB>"
-        inoremap <silent><expr> <cr> "\<c-g>u\<CR>"
-      '';
+      #  inoremap <silent><expr> <tab> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<TAB>"
+      #  inoremap <silent><expr> <cr> "\<c-g>u\<CR>"
+
+      #  " nimlsp
+      #  """""""""
+      #  let s:nimlspexecutable = "nimlsp"
+      #  let g:lsp_log_verbose = 1
+      #  let g:lsp_log_file = expand('/tmp/vim-lsp.log')
+      #  " for asyncomplete.vim log
+      #  let g:asyncomplete_log_file = expand('/tmp/asyncomplete.log')
+
+      #  let g:asyncomplete_auto_popup = 0
+
+      #  if has('win32')
+      #     let s:nimlspexecutable = "nimlsp.cmd"
+      #     " Windows has no /tmp directory, but has $TEMP environment variable
+      #     let g:lsp_log_file = expand('$TEMP/vim-lsp.log')
+      #     let g:asyncomplete_log_file = expand('$TEMP/asyncomplete.log')
+      #  endif
+      #  if executable(s:nimlspexecutable)
+      #     au User lsp_setup call lsp#register_server({
+      #     \ 'name': 'nimlsp',
+      #     \ 'cmd': {server_info->[s:nimlspexecutable]},
+      #     \ 'whitelist': ['nim'],
+      #     \ })
+      #  endif
+
+      #  function! s:check_back_space() abort
+      #      let col = col('.') - 1
+      #      return !col || getline('.')[col - 1]  =~ '\s'
+      #  endfunction
+
+      #  inoremap <silent><expr> <TAB>
+      #    \ pumvisible() ? "\<C-n>" :
+      #    \ <SID>check_back_space() ? "\<TAB>" :
+      #    \ asyncomplete#force_refresh()
+      #  inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+      #
+      #'';
   };
 
 
@@ -166,6 +274,7 @@
     longitude = "-104.80";
     latitude = "38.83";
   };
+
 
   home.file.".config/Code/User/settings.json".text = ''
   {

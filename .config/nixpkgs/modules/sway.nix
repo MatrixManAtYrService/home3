@@ -22,6 +22,10 @@ in {
       kanshi
       gammastep
     ];
+  extraSessionCommands = ''
+    eval $(gnome-keyring-daemon --start --components=secrets);
+    export SSH_AUTH_SOCK;
+  '';
   };
 
   systemd.user.targets.sway-session = {

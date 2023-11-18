@@ -13,6 +13,7 @@ in
   nix = {
     package = pkgs.nixFlakes;
     extraOptions = "experimental-features = nix-command flakes";
+    settings.trusted-users = [ "root" "matt" ];
   };
 
   location = {
@@ -26,16 +27,13 @@ in
   virtualisation.docker.daemon.settings.insecure-registries = [ "192.168.49.2:30500" ]; 
 
 
+  services.gnome.gnome-keyring.enable = true;
+
   # https://unix.stackexchange.com/a/437249
   # nixpkgs.config.firefox.enableGnomeExtensions = true;
   # services.gnome.chrome-gnome-shell.enable = true;
 
   nixpkgs.config.allowUnfree = true;
-  services.plex = {
-    enable = true;
-    openFirewall = true;
-  };
-  
   services.openssh.enable = true;
 
   services.printing.enable = true;
@@ -109,6 +107,7 @@ in
   #   }
   # }
 
+  programs.zsh.enable = true; 
   users.users.matt = {
     hashedPassword = secrets.nixosUser.matt.hashedPassword;
     isNormalUser = true;
